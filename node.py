@@ -4,6 +4,6 @@ class Node:
     
   def __init__(self,v,attributes):
         self.value = v
-        self.children = attributes
+        self.children = attributes.keys()
     
     
