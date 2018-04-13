@@ -16,7 +16,6 @@ def testPruning():
   data = [dict(a=1, b=1, c=1, Class=0), dict(a=1, b=0, c=0, Class=0), dict(a=0, b=1, c=0, Class=1), dict(a=0, b=0, c=0, Class=1), dict(a=0, b=0, c=1, Class=0)]
   validationData = [dict(a=0, b=0, c=1, Class=1)]
   tree = ID3.ID3(data, 0)
-  print "treesize is",ID3.treeSize(tree)
   ID3.prune(tree, validationData)
   if tree != None:
     ans = ID3.evaluate(tree, dict(a=0, b=1, c=1))
