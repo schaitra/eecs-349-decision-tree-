@@ -48,11 +48,86 @@ def Mode(examples):
 
 
 
-def chooseBestAttribute(examples):
+def chooseBestAttribute(examples,attributes,class):
 
-def entropy(examples, attribute):
-  #see how many are yes and no and ?
-  #sum(prob()log()prob())
+  bestgain = 0 
+  bestattribute = ""
+
+  for item in attributes: 
+    gain  = infgain (examples)
+    if gain>bestgain:
+      bestgain = gain
+      bestattribute = item 
+
+  return bestgain,bestattribute
+
+
+def targetentropy(examples, class): #works for binary classification not sure if we need this at all
+
+entropy = 0.0 
+
+v1 = 0 
+v2 = 0 
+q = 0
+
+for item in examples: 
+    if item[class] == "0": #0  means republican 
+        v1 = v1+1 
+    elif item[class] == '1': #democrat 
+        v2 = v2 + 1 
+    else:
+        q = q+1
+
+pv1 = v1/ (v1+v2+q)
+pv2 = v2/ (v1+v2+q)
+pq = q/ (v1+v2+q) 
+
+entropy = - (pv1 * math.log(pv1,2)) - (pv2 * math.log(pv2,2)) - (pq * math.log(pq,2))
+return entropy
+
+
+## For this next infogain function, we should use dictionaries to store attributes: values
+## one of their values should be a dict with number of democrats and number of republicans 
+## I was stuck on how to a)Create this dict and b) how to access different values of it 
+
+def infogain (examples):
+'''
+
+KEEP COUNT OF :
+total amount of each attribute - eg: handicapped - # of yes, # of no, # of q...
+within the particular value of an attribute - #democrat, # republican
+'''
+    
+att = data[1].keys()
+del att['Class']
+
+dict = {} 
+l = len(examples)
+entropy = 0.0 
+gain = 0.0
+
+for item in examples: 
+    for attribute in att:
+        if value of item[attribute] in dict
+        count of item in dictionary +1 
+            if class of item is already included
+                class +=1 
+            else:
+                class =1 
+        else: 
+        count of item = 1 
+        class of item +1 
+
+#results in a dictionary with {attribute:values}
+#eg: {handicapped infants: y, democrats:, republicans:, n...., ?...}
+
+for value in dict (y/n/?):
+    for nextvalue in next dict:
+     entropy += nextvalue/(sum of democrats and republicans)*math.log(nextvalue/sum of democrats and republicans)
+     gain += value/len(examples)*entropy 
+     return abs(gain)
+
+
 
 
 
