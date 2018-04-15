@@ -142,8 +142,11 @@ def infogain(examples, targetAtt):
                         countDict[attribute][value][example[targetAtt]] = 1
                 else:
                     #Does not have the value, add that value and value of the TargetAtt to the dictionary
+                    countDict[attribute][value] = {}
                     countDict[attribute][value][example[targetAtt]] = 1
             else:
+                countDict[attribute] = {}
+                countDict[attribute][value] = {}
                 countDict[attribute][value][example[targetAtt]] = 1
 
     # EXAMPLE OF WHAT THE DICTIONARY ^^^ THAT WOULD CREATE
