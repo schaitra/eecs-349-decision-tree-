@@ -6,4 +6,6 @@ class Node:
         self.value = v
         self.children = attributes.keys()
     
-    
+  def addBranch(self,tree,val):
+  	self.value = val; 
+  	self.children = tree
