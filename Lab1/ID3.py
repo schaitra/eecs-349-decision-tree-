@@ -99,6 +99,8 @@ def chooseBestAttribute(examples, targetAtt):
 
   countDict = {}
 
+  # TODO: TAKE OUT CLASS FROM ATTRIBUTES
+
   #Going through each example
   for example in examples:
       #Getting all the attributes from that example

@@ -1,9 +1,10 @@
 class Node:
-  attribute = "" 
-  children = {}
+  # attribute = "" 
+  # children = {}
     
   def __init__(self,att):
     self.attribute = att
+    self.children = {}
     
   def addBranch(self,tree, val):
   	self.children[val] = tree
