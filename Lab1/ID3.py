@@ -4,6 +4,9 @@ import math
 
 #examples is an array
 
+
+# {{Class: 'democrat', handicapped-individual: 'y'}, ...}
+
 def ID3(examples, default):
   '''
   Takes in an array of examples, and returns a tree (an instance of Node) 
@@ -90,33 +93,63 @@ return entropy
 ## one of their values should be a dict with number of democrats and number of republicans 
 ## I was stuck on how to a)Create this dict and b) how to access different values of it 
 
-def infogain (examples):
+def infogain (examples, targetAtt):
 '''
 
 KEEP COUNT OF :
 total amount of each attribute - eg: handicapped - # of yes, # of no, # of q...
 within the particular value of an attribute - #democrat, # republican
 '''
-    
-att = data[1].keys()
+
+# Array of all attributes without 'democrat' or 'republican' (Class)
+att = examples[1].keys()
 del att['Class']
 
-dict = {} 
+# Getting classes
+classes = []
+for cls in examples[1].keys()['Class']:
+    classes.append(cls)
+
+countDict = {}
 l = len(examples)
 entropy = 0.0 
 gain = 0.0
 
-for item in examples: 
-    for attribute in att:
-        if value of item[attribute] in dict
-        count of item in dictionary +1 
-            if class of item is already included
-                class +=1 
+# for item in examples:
+#     for attribute in att:
+#         if value of example[attribute] in dict:
+#
+#             count of item in dictionary +1
+#
+#             if class of item is already included
+#                 class +=1
+#             else:
+#                 class = 1
+#         else:
+#         count of item = 1
+#         class of item +1
+
+#Going through each example
+for example in examples:
+    #Getting all the attributes from that example
+    for attribute, value in example:
+        #Checking if that one attribute has already been looked at for other examples
+        if attribute in countDict.keys():
+            #if it has that attribute, check to see if that value has already been looked at for that attribute for other examples
+            if value in countDict[attribute].keys():
+                #If it has that value, check to see if that value of the targetAtt has been looked at for that value of that attribute for other examples
+                if example[targetAtt] in countDict[attribute][value].keys():
+                    #If that value of that target attribute has already been looked at for this value of this attribute of this example, just incrememt it
+                    countDict[attribute][value][example[targetAtt]] += 1
+
+                else:
+                    #Otherwise add that value of that target attribute to the dictionary
+                    countDict[attribute][value][example[targetAtt]] = 1
             else:
-                class =1 
-        else: 
-        count of item = 1 
-        class of item +1 
+                #Does not have the value, add that value and value of the TargetAtt to the dictionary
+                countDict[attribute][value][example[targetAtt]] = 1
+        else:
+            countDict[attribute][value][example[targetAtt]] = 1
 
 #results in a dictionary with {attribute:values}
 #eg: {handicapped infants: y, democrats:, republicans:, n...., ?...}
