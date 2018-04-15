@@ -127,7 +127,7 @@ def infogain(examples, targetAtt):
     #Going through each example
     for example in examples:
         #Getting all the attributes from that example
-        for attribute, value in example:
+        for attribute, value in example.iteritems():
             #Checking if that one attribute has already been looked at for other examples
             if attribute in countDict.keys():
                 #if it has that attribute, check to see if that value has already been looked at for that attribute for other examples
@@ -168,16 +168,16 @@ def infogain(examples, targetAtt):
     valCount = 0
     best = ""
 
-    for attribute, value in countDict:
+    for attribute, value in countDict.iteritems():
         newGain = 0.0
         attributeCount =0.0
         valueResults = []
         valueTotals = []
-        for val, targetAtts in value:
+        for val, targetAtts in value.iteritems():
             itemCounts = []
             valTotal = 0.0
             valResult = 0.0
-            for item, count in targetAtts:
+            for item, count in targetAtts.iteritems():
                 valTotal += count
                 itemCounts.append(count)
 
