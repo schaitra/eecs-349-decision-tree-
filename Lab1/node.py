@@ -1,14 +1,17 @@
-class Node:
-  # attribute = "" 
-  # children = {}
-    
-  def __init__(self,att):
-    self.attribute = att
-    self.children = {}
-    
-  def addBranch(self,tree, val):
-  	self.children[val] = tree
 
+
+
+class Node:
+
+  # attribute = ""
+  # children = {}
+
+    def __init__(self, att):
+        self.attribute = att
+        self.children = {}
+
+    def addBranch(self, tree, val):
+        self.children[val] = tree
 
  # Node1:
  # attribute = physician-fee-freeze
