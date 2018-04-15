@@ -18,8 +18,6 @@ def ID3(examples, default):
   for example in examples:
     lst.append(example['Class'])
 
-  return tree
-
   if len(examples) == 0:
     #return an empty node
     return default
@@ -44,7 +42,7 @@ def ID3(examples, default):
         if example[best] == val:
           examplesi.append(example)
         subtree = ID3(examplesi,Mode(examples))
-        t.addBranch(subtree,val)
+        t.addBranch(subtree, val)
     return t    
 
 
@@ -98,27 +96,6 @@ def chooseBestAttribute(examples, targetAtt):
   total amount of each attribute - eg: handicapped - # of yes, # of no, # of q...
   within the particular value of an attribute - #democrat, # republican
   '''
-
-  # Array of all attributes without 'democrat' or 'republican' (Class)
-  # att = examples[1].keys()
-  # del att['Class']
-  #
-  # l = len(examples)
-
-
-  # for item in examples:
-  #     for attribute in att:
-  #         if value of example[attribute] in dict:
-  #
-  #             count of item in dictionary +1
-  #
-  #             if class of item is already included
-  #                 class +=1
-  #             else:
-  #                 class = 1
-  #         else:
-  #         count of item = 1
-  #         class of item +1
 
   countDict = {}
 
@@ -222,3 +199,18 @@ def evaluate(node, example):
   Takes in a tree and one example.  Returns the Class value that the tree
   assigns to the example.
   '''
+  if type(node) is str:
+    return node
+
+  # while node.children:
+  #   val = example[node.attribute]
+  #   node = node.children[val]
+
+  while type(node) is not str:
+    val = example[node.attribute]
+    node = node.children[val]
+
+  return node
+
+
+
