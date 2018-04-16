@@ -77,13 +77,14 @@ def Mode(examples):
 
 
 def removeAtt(examples,attribute):
-    copy = examples.copy()
+    newExamples = copy.deepcopy(examples)
 
-    for example in copy:
+    for example in newExamples:
         if example.has_key(attribute):
             del example[attribute]
 
-    return copy
+    return newExamples
+
 
 
 ## For this next infogain function, we should use dictionaries to store attributes: values
