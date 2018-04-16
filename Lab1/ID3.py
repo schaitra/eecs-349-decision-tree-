@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from node import Node
 import math
+import copy 
 
 
 # examples is an array
@@ -21,8 +22,8 @@ def ID3(examples, default):
         lst.append(example['Class'])
     t = Node()
 
-    if len(examples) == 0:
-        t.label= default
+    if len(examples) == 1:
+        t.value= default
         return t
     
     elif lst[1:] == lst[:-1]:
@@ -30,13 +31,22 @@ def ID3(examples, default):
   # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
     # Node.Node(Mode(examples), examples.
                             # include check for non trivial splits
-        t.label = (Mode(examples))
+        t.value = (Mode(examples))
         return t
+
+    elif chooseBestAttribute(examples) is '':
+        t.value = (Mode(examples))
+        return t
+
+    elif len(getCountDict(examples, 'Class')[chooseBestAttribute(examples)]) == 1 : 
+        t.value  = Mode(examples)
+        return t 
+
 
     else:
 
         values = []
-        best = chooseBestAttribute(examples,'Class')
+        best = chooseBestAttribute(examples)
         t.attribute = best 
 
         for item in examples:
@@ -48,8 +58,8 @@ def ID3(examples, default):
             for example in examples:
                 if example[best] == val:
                     examplesi.append(example)
-                subtree = ID3(remove(examplesi,best), Mode(examples))
-                t.addBranch(subtree, val)
+                subtree = ID3(removeAtt(examplesi,best), Mode(examples))
+                t.children[val] = subtree
         return t
 
 
@@ -65,20 +75,22 @@ def Mode(examples):
 
     return max(modeDic, key=modeDic.get)
 
-def remove(examples,attribute):
-  copy = examples.copy()
 
-  if copy.has_key(attribute):
-    copy.remove(attribute)
+def removeAtt(examples,attribute):
+    copy = examples.copy()
 
-  return copy
+    for example in copy:
+        if example.has_key(attribute):
+            del example[attribute]
+
+    return copy
 
 
 ## For this next infogain function, we should use dictionaries to store attributes: values
 ## one of their values should be a dict with number of democrats and number of republicans
 ## I was stuck on how to a)Create this dict and b) how to access different values of it
 
-def chooseBestAttribute(examples, targetAtt):
+def getCountDict(examples, targetAtt):
     '''
 
   KEEP COUNT OF :
@@ -135,6 +147,7 @@ def chooseBestAttribute(examples, targetAtt):
                 countDict[attribute][value] = {}
                 countDict[attribute][value][example[targetAtt]] = 1
 
+    return countDict
   # EXAMPLE OF WHAT THE DICTIONARY ^^^ THAT WOULD CREATE
   # {{att1:
   #         {x: {'democrat': 0, 'republican': 0}},
@@ -146,6 +159,11 @@ def chooseBestAttribute(examples, targetAtt):
   #         {y: {'democrat': 5, 'republican': 2}},
   #         {z: {'democrat': 2, 'republican': 6}},
   #         {?: {'democrat': 0, 'republican': 1}}}}
+
+
+def chooseBestAttribute(examples):
+
+    countDict = getCountDict(examples,'Class')
 
     entropy = 0.0
     gain = 0.0
@@ -211,14 +229,13 @@ def evaluate(node, example):
   Takes in a tree and one example.  Returns the Class value that the tree
   assigns to the example.
   '''
-
-  if len(node.children==0):
-    return node.value
+    if len(node.children) is 0:
+        return node.value
 
     while len(node.children) is not 0:
-      for val, branch in node.children.iteritems():
-        if example[node.attribute] == val: #match --> move down tree
-          node=branch
-      
+        for val, branch in node.children.iteritems():
+            if example[node.attribute] == val: #match --> move down tree
+                node=branch
+        
 
     return node.value
