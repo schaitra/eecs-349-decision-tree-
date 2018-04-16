@@ -22,9 +22,7 @@ def ID3(examples, default):
     t = Node()
 
     if len(examples) == 0:
-
-    # return an empty node
-        t.addLabel(default)
+        t.label= default
         return t
     
     elif lst[1:] == lst[:-1]:
@@ -32,7 +30,7 @@ def ID3(examples, default):
   # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
     # Node.Node(Mode(examples), examples.
                             # include check for non trivial splits
-        t.addLabel(Mode(examples))
+        t.label = (Mode(examples))
         return t
 
     else:
@@ -50,7 +48,7 @@ def ID3(examples, default):
             for example in examples:
                 if example[best] == val:
                     examplesi.append(example)
-                subtree = ID3(examplesi, Mode(examples))
+                subtree = ID3(remove(examplesi,best), Mode(examples))
                 t.addBranch(subtree, val)
         return t
 
@@ -66,6 +64,14 @@ def Mode(examples):
   # If the lengths are the same, it takes the attribute that appears first in the dictionary
 
     return max(modeDic, key=modeDic.get)
+
+def remove(examples,attribute):
+  copy = examples.copy()
+
+  if copy.has_key(attribute):
+    copy.remove(attribute)
+
+  return copy
 
 
 ## For this next infogain function, we should use dictionaries to store attributes: values
@@ -204,15 +210,13 @@ def evaluate(node, example):
   assigns to the example.
   '''
 
-    if type(node) is str:
-        return node
+  if len(node.children==0):
+    return node.value
 
-  # while node.children:
-  #   val = example[node.attribute]
-  #   node = node.children[val]
+    while len(node.children) is not 0:
+      for val, branch in node.children.iteritems():
+        if example[node.attribute] == val: #match --> move down tree
+          node=branch
+      
 
-    while type(node) is not str:
-        val = example[node.attribute]
-        node = node.children[val]
-
-    return node
+    return node.value

@@ -9,13 +9,7 @@ class Node:
     def __init__(self):
         self.attribute = None
         self.children = {}
-        self.label=None
-
-    def addBranch(self, tree, val):
-        self.children[val] = tree
-
-    def addLabel(self,label):
-    	self.label=Label
+        self.value=None
     
  # Node1:
  # attribute = physician-fee-freeze
