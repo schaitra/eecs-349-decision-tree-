@@ -1,6 +1,3 @@
-
-
-
 class Node:
 
   # attribute = ""

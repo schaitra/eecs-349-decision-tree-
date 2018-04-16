@@ -100,8 +100,10 @@ def chooseBestAttribute(examples, targetAtt):
         for (attribute, value) in example.iteritems():
 
           # Checking if that one attribute has already been looked at for other examples
+            if attribute == targetAtt:
+                pass
 
-            if attribute in countDict.keys():
+            elif attribute in countDict.keys():
 
               # if it has that attribute, check to see if that value has already been looked at for that attribute for other examples
 
