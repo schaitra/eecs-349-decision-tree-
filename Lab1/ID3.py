@@ -19,24 +19,27 @@ def ID3(examples, default):
     lst = []
     for example in examples:
         lst.append(example['Class'])
+    t = Node()
 
     if len(examples) == 0:
 
     # return an empty node
-
-        return default
+        t.addLabel(default)
+        return t
+    
     elif lst[1:] == lst[:-1]:
 
   # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
     # Node.Node(Mode(examples), examples.
                             # include check for non trivial splits
+        t.addLabel(Mode(examples))
+        return t
 
-        return Mode(examples)
     else:
 
         values = []
-        best = chooseBestAttribute(examples)
-        t = Node.Node(best)
+        best = chooseBestAttribute(examples,'Class')
+        t.attribute = best 
 
         for item in examples:
             if item[best] not in values:
@@ -78,6 +81,7 @@ def chooseBestAttribute(examples, targetAtt):
   '''
 
     countDict = {}
+
 
   # TODO: TAKE OUT CLASS FROM ATTRIBUTES
 
@@ -165,7 +169,7 @@ def chooseBestAttribute(examples, targetAtt):
         for (counter, num) in enumerate(valueResults):
             newGain += valueTotals[counter] / len(examples) * num
 
-        if abs(newGain) > gain:
+        if abs(newGain) >= gain:
             gain = abs(newGain)
             best = attribute
 

@@ -6,13 +6,17 @@ class Node:
   # attribute = ""
   # children = {}
 
-    def __init__(self, att):
-        self.attribute = att
+    def __init__(self):
+        self.attribute = None
         self.children = {}
+        self.label=None
 
     def addBranch(self, tree, val):
         self.children[val] = tree
 
+    def addLabel(self,label):
+    	self.label=Label
+    
  # Node1:
  # attribute = physician-fee-freeze
  # children = {y: Node2, n: Node3, ?: 'democrat'}
