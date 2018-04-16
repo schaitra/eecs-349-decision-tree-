@@ -1,5 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 from node import Node
 import math
 import copy 
@@ -16,14 +14,16 @@ def ID3(examples, default):
   and the target class variable is a special attribute with the name "Class".
   Any missing attributes are denoted with a value of "?"
   '''
-
+    countDict = getCountDict(examples,'Class')
     lst = []
     for example in examples:
         lst.append(example['Class'])
     t = Node()
+    
 
-    if len(examples) == 1:
+    if len(examples) == 0:
         t.value= default
+        print 'Entered Len 0'
         return t
     
     elif lst[1:] == lst[:-1]:
@@ -31,11 +31,14 @@ def ID3(examples, default):
   # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
     # Node.Node(Mode(examples), examples.
                             # include check for non trivial splits
-        t.value = (Mode(examples))
+        t.value = examples[0]['Class']
+        print 'Entered homo'
         return t
 
-    elif chooseBestAttribute(examples) is '':
-        t.value = (Mode(examples))
+    #chooseBestAttribute(examples) is '':
+    elif not countDict:
+        t.value = Mode(examples)
+        print 'Entered Empty Att'
         return t
 
     elif len(getCountDict(examples, 'Class')[chooseBestAttribute(examples)]) == 1 : 
@@ -47,17 +50,20 @@ def ID3(examples, default):
 
         values = []
         best = chooseBestAttribute(examples)
+        print best 
         t.attribute = best 
 
         for item in examples:
             if item[best] not in values:
                 values.append(item[best])
-
+        print values
+        
         for val in values:
             examplesi = []
             for example in examples:
                 if example[best] == val:
                     examplesi.append(example)
+                subtree=Node()
                 subtree = ID3(removeAtt(examplesi,best), Mode(examples))
                 t.children[val] = subtree
         return t
@@ -70,7 +76,7 @@ def Mode(examples):
             modeDic[example['Class']] = 1
         else:
             modeDic[example['Class']] += 1
-
+    print modeDic
   # If the lengths are the same, it takes the attribute that appears first in the dictionary
 
     return max(modeDic, key=modeDic.get)
@@ -84,7 +90,7 @@ def removeAtt(examples,attribute):
             del example[attribute]
 
     return newExamples
-
+    
 
 
 ## For this next infogain function, we should use dictionaries to store attributes: values
@@ -226,17 +232,17 @@ def test(node, examples):
 
 
 def evaluate(node, example):
-    '''
+  '''
   Takes in a tree and one example.  Returns the Class value that the tree
   assigns to the example.
   '''
-    if len(node.children) is 0:
-        return node.value
-
-    while len(node.children) is not 0:
-        for val, branch in node.children.iteritems():
-            if example[node.attribute] == val: #match --> move down tree
-                node=branch
-        
-
-    return node.value
+  while len(node.children) != 0: #check for an empty dict 
+    for value, child in node.children.iteritems(): # get value (int) and children (nodes)
+     
+      if example[node.attribute] == value: #find a match?
+        node = child #set node to be the child
+        break
+    
+    #set the node to be the children 
+    node = child
+  return node.value
