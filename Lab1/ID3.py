@@ -43,7 +43,7 @@ def ID3(examples, default):
 
     best = chooseBestAttribute(examples)
 
-    if len(getCountDict(examples, 'Class')[chooseBestAttribute(examples)]) == 1 : 
+    if len(countDict[chooseBestAttribute(examples)]) == 1: 
         t.value  = Mode(examples)
         return t 
 
