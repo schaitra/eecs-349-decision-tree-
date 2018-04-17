@@ -175,13 +175,42 @@ def getCountDict(examples, targetAtt):
 
 
 def chooseBestAttribute(examples):
+  countDict = getCountDict(examples,'Class') 
+  print countDict
+  entropy = 0.0
+  gain = 0.0
+  best=''
+  for (attribute, value) in countDict.iteritems():
+        valueResults = []
+        valueTotals = []
+        itemCounts = []
+        valTotal = 0.0
+        print 'Att:' + attribute
+     
+        for (val, targetAtts) in value.iteritems():
+            for key,count in targetAtts.iteritems():
+                print count
+                itemCounts.append(count)
+                valTotal+=count
+        print itemCounts
+        print valTotal 
+        
+        for count in itemCounts:
+            probability = count/valTotal
+            print probability
+            entropy -= probability * math.log(probability,2)
+            print entropy
+        
+        if entropy>= gain:
+            gain = entropy 
+            best = attribute
+        return best
 
-    countDict = getCountDict(examples,'Class')
 
-    entropy = 0.0
-    gain = 0.0
-    best = ''
-
+def ent(examples,att):
+  countDict = getCountDict(examples,'Class')
+  entropy = 0.0
+  best=''
     for (attribute, value) in countDict.iteritems():
         newGain = 0.0
         valueResults = []
@@ -201,14 +230,8 @@ def chooseBestAttribute(examples):
             valueTotals.append(valTotal) #for att1 [0, 7, 8, 1]
             total = sum(valueTotals)
 
-        for (counter, num) in enumerate(valueResults):
-            newGain += (valueTotals[counter] / total) * num
-
-        if abs(newGain) >= gain:
-            gain = abs(newGain)
-            best = attribute
-
-    return best
+  print total 
+  return total 
 
 
 def prune(node, examples):
