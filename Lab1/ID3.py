@@ -8,93 +8,93 @@ import copy
 # {{Class: 'democrat', handicapped-individual: 'y'}, ...}
 
 def ID3(examples, default):
-    '''
+  '''
   Takes in an array of examples, and returns a tree (an instance of Node) 
   trained on the examples.  Each example is a dictionary of attribute:value pairs,
   and the target class variable is a special attribute with the name "Class".
   Any missing attributes are denoted with a value of "?"
   '''
-    countDict = getCountDict(examples,'Class')
-    print countDict
-    t = Node()
+  countDict = getCountDict(examples,'Class')
+  print countDict
+  t = Node()
 
-    
-    lst = []
-    for example in examples:
-        lst.append(example['Class'])
+      
+  lst = []
+  for example in examples:
+      lst.append(example['Class'])
 
-    if len(examples) == 0:
-        t.value= default
-        print 'Entered Len 0'
-        return t
+  if len(examples) == 0:
+      t.value= default
+      print 'Entered Len 0'
+      return t
 
-    elif lst[1:] == lst[:-1]:
+  elif lst[1:] == lst[:-1]:
 
   # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
     # Node.Node(Mode(examples), examples.
                             # include check for non trivial splits
-        t.value = examples[0]['Class']
-        print 'Entered homo'
-        return t
+      t.value = examples[0]['Class']
+      print 'Entered homo'
+      return t
 
     #chooseBestAttribute(examples) is '':
-    elif not countDict:
-        t.value = Mode(examples)
-        print 'Entered Empty Att'
-        return t
+  elif not countDict:
+      t.value = Mode(examples)
+      print 'Entered Empty Att'
+      return t
 
-    best = chooseBestAttribute(examples)
+  best = chooseBestAttribute(examples)
 
-    if len(countDict[best]) == 1: 
-        t.value  = Mode(examples)
-        print 'Entered only value for attribute'
-        return t 
+  if len(countDict[best]) == 1: 
+      t.value  = Mode(examples)
+      print 'Entered only value for attribute'
+      return t 
 
 
-    else:
+  else:
 
-        values = []
-        print best 
-        t.attribute = best 
+      values = []
+      print best 
+      t.attribute = best 
 
-        for item in examples:
-            if item[best] not in values:
-                values.append(item[best])
-        
-        for val in values:
-            examplesi = []
-            for example in examples:
-                if example[best] == val:
-                    examplesi.append(example)
-                subtree=Node()
-                subtree = ID3(removeAtt(examplesi,best), Mode(examples))
-                t.children[val] = subtree
+      for item in examples:
+          if item[best] not in values:
+              values.append(item[best])
+      
+      for val in values:
+          examplesi = []
+          for example in examples:
+              if example[best] == val:
+                  examplesi.append(example)
+              subtree=Node()
+              subtree = ID3(removeAtt(examplesi,best), Mode(examples))
+              t.children[val] = subtree
 
-        print t
-        return t
+      print t
+      return t
 
 
 def Mode(examples):
-    modeDic = {}
-    for example in examples:
-        if example['Class'] not in modeDic.keys():
-            modeDic[example['Class']] = 1
-        else:
-            modeDic[example['Class']] += 1
-    print modeDic
-  # If the lengths are the same, it takes the attribute that appears first in the dictionary
+  modeDic = {}
+  for example in examples:
+      if example['Class'] not in modeDic.keys():
+          modeDic[example['Class']] = 1
+      else:
+          modeDic[example['Class']] += 1
+  print modeDic
+# If the lengths are the same, it takes the attribute that appears first in the dictionary
 
-    return max(modeDic, key=modeDic.get)
+  return max(modeDic, key=modeDic.get)
 
 
 def removeAtt(examples,attribute):
-    newExamples = copy.deepcopy(examples)
+  newExamples = copy.deepcopy(examples)
 
-    for example in newExamples:
-        if example.has_key(attribute):
-            del example[attribute]
+  for example in newExamples:
+      if example.has_key(attribute):
+          del example[attribute]
 
-    return newExamples
+  return newExamples
     
 
 
@@ -103,64 +103,63 @@ def removeAtt(examples,attribute):
 ## I was stuck on how to a)Create this dict and b) how to access different values of it
 
 def getCountDict(examples, targetAtt):
-    '''
+  '''
 
   KEEP COUNT OF :
   total amount of each attribute - eg: handicapped - # of yes, # of no, # of q...
   within the particular value of an attribute - #democrat, # republican
   '''
 
-    countDict = {}
+  countDict = {}
 
 
   # TODO: TAKE OUT CLASS FROM ATTRIBUTES
 
   # Going through each example
 
-    for example in examples:
+  for example in examples:
 
-      # Getting all the attributes from that example
+    # Getting all the attributes from that example
 
-        for (attribute, value) in example.iteritems():
+    for (attribute, value) in example.iteritems():
 
-          # Checking if that one attribute has already been looked at for other examples
-            if attribute == targetAtt:
-                pass
+      # Checking if that one attribute has already been looked at for other examples
+        if attribute == targetAtt:
+            pass
 
-            elif attribute in countDict.keys():
+        elif attribute in countDict.keys():
 
-              # if it has that attribute, check to see if that value has already been looked at for that attribute for other examples
+          # if it has that attribute, check to see if that value has already been looked at for that attribute for other examples
 
-                if value in countDict[attribute].keys():
+            if value in countDict[attribute].keys():
 
-                  # If it has that value, check to see if that value of the targetAtt has been looked at for that value of that attribute for other examples
+              # If it has that value, check to see if that value of the targetAtt has been looked at for that value of that attribute for other examples
 
-                    if example[targetAtt] \
-                        in countDict[attribute][value].keys():
+                if example[targetAtt] \
+                    in countDict[attribute][value].keys():
 
-                      # If that value of that target attribute has already been looked at for this value of this attribute of this example, just incrememt it
+                  # If that value of that target attribute has already been looked at for this value of this attribute of this example, just incrememt it
 
-                        countDict[attribute][value][example[targetAtt]] += \
-                            1
-                    else:
-
-                      # Otherwise add that value of that target attribute to the dictionary
-
-                        countDict[attribute][value][example[targetAtt]] = \
-                            1
+                    countDict[attribute][value][example[targetAtt]] += \
+                        1
                 else:
 
-                  # Does not have the value, add that value and value of the TargetAtt to the dictionary
+                  # Otherwise add that value of that target attribute to the dictionary
 
-                    countDict[attribute][value] = {}
-                    countDict[attribute][value][example[targetAtt]] = 1
+                    countDict[attribute][value][example[targetAtt]] = \
+                        1
             else:
-                countDict[attribute] = {}
+
+              # Does not have the value, add that value and value of the TargetAtt to the dictionary
+
                 countDict[attribute][value] = {}
                 countDict[attribute][value][example[targetAtt]] = 1
+        else:
+            countDict[attribute] = {}
+            countDict[attribute][value] = {}
+            countDict[attribute][value][example[targetAtt]] = 1
 
-    return countDict
-
+  return countDict
   # EXAMPLE OF WHAT THE DICTIONARY ^^^ THAT WOULD CREATE
   # {{att1:
   #         {x: {'democrat': 0, 'republican': 0}},
@@ -181,54 +180,54 @@ def chooseBestAttribute(examples):
   gain = 0.0
   best=''
   for (attribute, value) in countDict.iteritems():
-        valueResults = []
-        valueTotals = []
-        itemCounts = []
-        valTotal = 0.0
-        print 'Att:' + attribute
-     
-        for (val, targetAtts) in value.iteritems():
-            for key,count in targetAtts.iteritems():
-                print count
-                itemCounts.append(count)
-                valTotal+=count
-        print itemCounts
-        print valTotal 
-        
-        for count in itemCounts:
-            probability = count/valTotal
-            print probability
-            entropy -= probability * math.log(probability,2)
-            print entropy
-        
-        if entropy>= gain:
-            gain = entropy 
-            best = attribute
-        return best
+    valueResults = []
+    valueTotals = []
+    itemCounts = []
+    valTotal = 0.0
+    print 'Att:' + attribute
+ 
+    for (val, targetAtts) in value.iteritems():
+        for key,count in targetAtts.iteritems():
+            print count
+            itemCounts.append(count)
+            valTotal+=count
+    print itemCounts
+    print valTotal 
+    
+    for count in itemCounts:
+        probability = count/valTotal
+        print probability
+        entropy -= probability * math.log(probability,2)
+        print entropy
+    
+    if entropy>= gain:
+        gain = entropy 
+        best = attribute
+    return best
 
 
 def ent(examples,att):
   countDict = getCountDict(examples,'Class')
   entropy = 0.0
   best=''
-    for (attribute, value) in countDict.iteritems():
-        newGain = 0.0
-        valueResults = []
-        valueTotals = []
-        for (val, targetAtts) in value.iteritems():
-            itemCounts = []
-            valTotal = 0.0
-            valResult = 0.0
-            for (item, count) in targetAtts.iteritems():
-                valTotal += count #total dems and pubs in that value for that attribute
-                itemCounts.append(count)
+  for (attribute, value) in countDict.iteritems():
+      newGain = 0.0
+      valueResults = []
+      valueTotals = []
+      for (val, targetAtts) in value.iteritems():
+          itemCounts = []
+          valTotal = 0.0
+          valResult = 0.0
+          for (item, count) in targetAtts.iteritems():
+              valTotal += count #total dems and pubs in that value for that attribute
+              itemCounts.append(count)
 
-            for num in itemCounts:
-                valResult -= (num / valTotal) * math.log((num / valTotal), 2)
+          for num in itemCounts:
+              valResult -= (num / valTotal) * math.log((num / valTotal), 2)
 
-            valueResults.append(valResult) #for att1 [a, b, c, d]
-            valueTotals.append(valTotal) #for att1 [0, 7, 8, 1]
-            total = sum(valueTotals)
+          valueResults.append(valResult) #for att1 [a, b, c, d]
+          valueTotals.append(valTotal) #for att1 [0, 7, 8, 1]
+          total = sum(valueTotals)
 
   print total 
   return total 
@@ -242,31 +241,29 @@ def prune(node, examples):
 
 
 def test(node, examples):
-    '''
+  ''' 
   Takes in a trained tree and a test set of examples.  Returns the accuracy (fraction
   of examples the tree classifies correctly).
   '''
 
-    count = 0.0
-    for example in examples:
-        exclass = evaluate(node, example)
-        if exclass == example['Class']:
-            count += 1
-    acc = count / len(examples)
-    return acc
+  count = 0.0
+  for example in examples:
+      exclass = evaluate(node, example)
+      if exclass == example['Class']:
+          count += 1
+  acc = count / len(examples)
+  return acc
 
 
 def evaluate(node, example):
-  '''
-  Takes in a tree and one example.  Returns the Class value that the tree
-  assigns to the example.
+  '''Takes in a tree and one example.  Returns the Class value that the tree assigns to the example.
   '''
   while len(node.children) != 0: #check for an empty dict 
     for value, child in node.children.iteritems(): # get value (int) and children (nodes)
      
       if example[node.attribute] == value: #find a match?
-        node = child #set node to be the child
-        break
+          node = child #set node to be the child
+          break
     
     #set the node to be the children 
     node = child
