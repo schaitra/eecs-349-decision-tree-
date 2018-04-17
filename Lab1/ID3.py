@@ -15,7 +15,6 @@ def ID3(examples, default):
   Any missing attributes are denoted with a value of "?"
   '''
   countDict = getCountDict(examples,'Class')
-  print countDict
   t = Node()
 
       
@@ -25,7 +24,6 @@ def ID3(examples, default):
 
   if len(examples) == 0:
       t.value= default
-      print 'Entered Len 0'
       return t
 
   elif lst[1:] == lst[:-1]:
@@ -34,27 +32,23 @@ def ID3(examples, default):
     # Node.Node(Mode(examples), examples.
                             # include check for non trivial splits
       t.value = examples[0]['Class']
-      print 'Entered homo'
       return t
 
     #chooseBestAttribute(examples) is '':
   elif not countDict:
       t.value = Mode(examples)
-      print 'Entered Empty Att'
       return t
 
   best = chooseBestAttribute(examples)
 
   if len(countDict[best]) == 1: 
       t.value  = Mode(examples)
-      print 'Entered only value for attribute'
       return t 
 
 
   else:
 
       values = []
-      print best 
       t.attribute = best 
 
       for item in examples:
@@ -70,7 +64,7 @@ def ID3(examples, default):
               subtree = ID3(removeAtt(examplesi,best), Mode(examples))
               t.children[val] = subtree
 
-      print t
+      
       return t
 
 
@@ -81,7 +75,7 @@ def Mode(examples):
           modeDic[example['Class']] = 1
       else:
           modeDic[example['Class']] += 1
-  print modeDic
+  
 # If the lengths are the same, it takes the attribute that appears first in the dictionary
 
   return max(modeDic, key=modeDic.get)
@@ -175,7 +169,7 @@ def getCountDict(examples, targetAtt):
 
 def chooseBestAttribute(examples):
   countDict = getCountDict(examples,'Class') 
-  print countDict
+  
   entropy = 0.0
   gain = 0.0
   best=''
@@ -184,53 +178,26 @@ def chooseBestAttribute(examples):
     valueTotals = []
     itemCounts = []
     valTotal = 0.0
-    print 'Att:' + attribute
+    
  
     for (val, targetAtts) in value.iteritems():
         for key,count in targetAtts.iteritems():
-            print count
+            
             itemCounts.append(count)
             valTotal+=count
-    print itemCounts
-    print valTotal 
+    
     
     for count in itemCounts:
         probability = count/valTotal
-        print probability
         entropy -= probability * math.log(probability,2)
-        print entropy
-    
+        
+    ##times it by the probability in order to choose
     if entropy>= gain:
         gain = entropy 
         best = attribute
+    
     return best
 
-
-def ent(examples,att):
-  countDict = getCountDict(examples,'Class')
-  entropy = 0.0
-  best=''
-  for (attribute, value) in countDict.iteritems():
-      newGain = 0.0
-      valueResults = []
-      valueTotals = []
-      for (val, targetAtts) in value.iteritems():
-          itemCounts = []
-          valTotal = 0.0
-          valResult = 0.0
-          for (item, count) in targetAtts.iteritems():
-              valTotal += count #total dems and pubs in that value for that attribute
-              itemCounts.append(count)
-
-          for num in itemCounts:
-              valResult -= (num / valTotal) * math.log((num / valTotal), 2)
-
-          valueResults.append(valResult) #for att1 [a, b, c, d]
-          valueTotals.append(valTotal) #for att1 [0, 7, 8, 1]
-          total = sum(valueTotals)
-
-  print total 
-  return total 
 
 
 def prune(node, examples):
@@ -248,8 +215,11 @@ def test(node, examples):
 
   count = 0.0
   for example in examples:
+      print example 
       exclass = evaluate(node, example)
       if exclass == example['Class']:
+          print Example
+          print Correct
           count += 1
   acc = count / len(examples)
   return acc
