@@ -15,17 +15,19 @@ def ID3(examples, default):
   Any missing attributes are denoted with a value of "?"
   '''
     countDict = getCountDict(examples,'Class')
+    print countDict
+    t = Node()
+
+    
     lst = []
     for example in examples:
         lst.append(example['Class'])
-    t = Node()
-    
 
     if len(examples) == 0:
         t.value= default
         print 'Entered Len 0'
         return t
-    
+
     elif lst[1:] == lst[:-1]:
 
   # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
@@ -43,8 +45,9 @@ def ID3(examples, default):
 
     best = chooseBestAttribute(examples)
 
-    if len(countDict[chooseBestAttribute(examples)]) == 1: 
+    if len(countDict[best]) == 1: 
         t.value  = Mode(examples)
+        print 'Entered only value for attribute'
         return t 
 
 
@@ -57,7 +60,6 @@ def ID3(examples, default):
         for item in examples:
             if item[best] not in values:
                 values.append(item[best])
-        print values
         
         for val in values:
             examplesi = []
@@ -67,6 +69,8 @@ def ID3(examples, default):
                 subtree=Node()
                 subtree = ID3(removeAtt(examplesi,best), Mode(examples))
                 t.children[val] = subtree
+
+        print t
         return t
 
 
@@ -156,6 +160,7 @@ def getCountDict(examples, targetAtt):
                 countDict[attribute][value][example[targetAtt]] = 1
 
     return countDict
+
   # EXAMPLE OF WHAT THE DICTIONARY ^^^ THAT WOULD CREATE
   # {{att1:
   #         {x: {'democrat': 0, 'republican': 0}},
@@ -175,13 +180,10 @@ def chooseBestAttribute(examples):
 
     entropy = 0.0
     gain = 0.0
-    attributeCount = 0
-    valCount = 0
     best = ''
 
     for (attribute, value) in countDict.iteritems():
         newGain = 0.0
-        attributeCount = 0.0
         valueResults = []
         valueTotals = []
         for (val, targetAtts) in value.iteritems():
@@ -189,19 +191,18 @@ def chooseBestAttribute(examples):
             valTotal = 0.0
             valResult = 0.0
             for (item, count) in targetAtts.iteritems():
-                valTotal += count
+                valTotal += count #total dems and pubs in that value for that attribute
                 itemCounts.append(count)
 
             for num in itemCounts:
-                valResult += num / valTotal * math.log(num / valTotal,
-                        2)
+                valResult -= (num / valTotal) * math.log((num / valTotal), 2)
 
-            attributeCount += valCount
-            valueResults.append(valResult)
-            valueTotals.append(valTotal)
+            valueResults.append(valResult) #for att1 [a, b, c, d]
+            valueTotals.append(valTotal) #for att1 [0, 7, 8, 1]
+            total = sum(valueTotals)
 
         for (counter, num) in enumerate(valueResults):
-            newGain += valueTotals[counter] / len(examples) * num
+            newGain += (valueTotals[counter] / total) * num
 
         if abs(newGain) >= gain:
             gain = abs(newGain)
@@ -247,3 +248,6 @@ def evaluate(node, example):
     #set the node to be the children 
     node = child
   return node.value
+
+
+# print getCountDict([{'Class': 1}, {'Class': 1}, {'Class': 1}], 'Class')
