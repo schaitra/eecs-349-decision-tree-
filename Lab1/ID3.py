@@ -41,7 +41,9 @@ def ID3(examples, default):
         print 'Entered Empty Att'
         return t
 
-    elif len(getCountDict(examples, 'Class')[chooseBestAttribute(examples)]) == 1 : 
+    best = chooseBestAttribute(examples)
+
+    if len(getCountDict(examples, 'Class')[chooseBestAttribute(examples)]) == 1 : 
         t.value  = Mode(examples)
         return t 
 
@@ -49,7 +51,6 @@ def ID3(examples, default):
     else:
 
         values = []
-        best = chooseBestAttribute(examples)
         print best 
         t.attribute = best 
 
