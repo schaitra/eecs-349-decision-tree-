@@ -274,30 +274,47 @@ def prune(node, examples):
     Takes in a trained tree and a validation set of examples.  Prunes nodes in order
     to improve accuracy on the validation data; the precise pruning strategy is up to you.
     '''
-    print 'before'
+    print 'BEFORE'
     printNode(node)
+    print '---------------------------'
+
     node = dfs(node, examples)
-    print 'after'
+
+    print '---------------------------'
+    print 'AFTER'
     printNode(node)
+    print '---------------------------'
+
     return node
 
 
 def dfs(node, examples):
 
-    # for value, child in currNode.children.iteritems():
-    #     child = dfs(child, examples)
+    print 'children', node.children
+    print 'examples', examples
+
+    att = node.attribute
+    examplesi = []
+
+    for value, child in node.children.iteritems():
+        for example in examples:
+            if value == example[att]:
+                examplesi.append(example)
+        child = dfs(child, examplesi)
+        examplesi = []
 
     #Base case - compare acc for pruned node and not pruned
     # return pruned node if it's better
     copyNode = copy.copy(node)
     copyNode.children = {}
-    if test(node, examples) <= test(copyNode, examples):
+
+    if len(examples) is not 0 and test(node, examples) <= test(copyNode, examples):
         return copyNode
 
     #Recursive Case
-    else:
-        for value, child in currNode.children.iteritems():
-            child = dfs(child, examples)
+    # else:
+    #     for value, child in node.children.iteritems():
+    #         child = dfs(child, examples)
 
     return node
 
@@ -328,7 +345,8 @@ def evaluate(node, example):
     
     #set the node to be the children 
     node = child
-  return node.value
+  return node.majority
+  # return node.value
 
 
 def chooseBestAttribute(examples,countDict):
