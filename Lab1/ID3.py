@@ -14,7 +14,7 @@ def ID3(examples, default):
   and the target class variable is a special attribute with the name "Class".
   Any missing attributes are denoted with a value of "?"
   '''
-  countDict = getCountDict(examples,'Class')
+  countDict = getCountDict(examples,'Class') #it can still have the attribute but we may need to remove it
   t = Node()
 
   lst = []
@@ -55,12 +55,12 @@ def ID3(examples, default):
       
       for val in values:
           examplesi = []
-          for example in examples:
+          for example in examples: 
               if example[best] == val:
                   examplesi.append(example)
-              subtree=Node()
-              subtree = ID3(examplesi, Mode(examples))
-              t.children[val] = subtree
+          subtree=Node()
+          subtree = ID3(examplesi, Mode(examples))
+          t.children[val] = subtree
 
       return t
 
