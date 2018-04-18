@@ -7,6 +7,7 @@ class Node:
         self.attribute = None
         self.children = {}
         self.value=None
+        self.majority = None
     
  # Node1:
  # attribute = physician-fee-freeze

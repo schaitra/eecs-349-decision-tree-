@@ -23,21 +23,25 @@ def ID3(examples, default):
 
   if len(examples) == 0:
       t.value= default
+      t.majority = default
       return t
 
   elif lst[1:] == lst[:-1]:
       t.value = examples[0]['Class']
+      t.majority = examples[0]['Class']
       return t
 
   #chooseBestAttribute(examples) is '':
   elif not countDict:
       t.value = Mode(examples)
+      t.majority = Mode(examples)
       return t
 
-  best = chooseBestAttribute(examples)
+  best = chooseBestAttribute(examples,countDict)
 
   if len(countDict[best]) == 1: 
       t.value  = Mode(examples)
+      t.majority = Mode(examples)
       return t 
 
   else:
@@ -55,7 +59,7 @@ def ID3(examples, default):
               if example[best] == val:
                   examplesi.append(example)
               subtree=Node()
-              subtree = ID3(removeAtt(examplesi,best), Mode(examples))
+              subtree = ID3(examplesi, Mode(examples))
               t.children[val] = subtree
 
       return t
@@ -96,9 +100,6 @@ def getCountDict(examples, targetAtt):
 
   countDict = {}
 
-
-  # TODO: TAKE OUT CLASS FROM ATTRIBUTES
-
   # Going through each example
 
   for example in examples:
@@ -107,9 +108,12 @@ def getCountDict(examples, targetAtt):
 
     for (attribute, value) in example.iteritems():
 
-      # Checking if that one attribute has already been looked at for other examples
+      # Removing Class 
+
         if attribute == targetAtt:
             pass
+
+      # Checking if that one attribute has already been looked at for other examples
 
         elif attribute in countDict.keys():
 
@@ -158,12 +162,67 @@ def getCountDict(examples, targetAtt):
 
 
 
-
+'''
 def prune(node, examples):
-    '''
-  Takes in a trained tree and a validation set of examples.  Prunes nodes in order
-  to improve accuracy on the validation data; the precise pruning strategy is up to you.
-  '''
+    
+    Takes in a trained tree and a validation set of examples.  Prunes nodes in order
+    to improve accuracy on the validation data; the precise pruning strategy is up to you.
+    
+    acc = test(node,examples)
+    newTree = dfs(node,examples)
+
+
+    return newTree
+
+def dfs(node, examples,acc):
+    leaves = []
+    numLeaves = len(node.children)
+    for value, child in node.children.iteritems():
+        if child.value is None:
+            newNode = dfs(child, examples)
+            if test(node,examples) > acc:
+               child = newNode
+
+            child = newNode
+
+
+            if newNode.value is not None:
+                leaves.append(child)
+        else:
+            leaves.append(child)
+
+    #if all children were added to leaves then check to see if you should prune
+    if len(leaves) == numLeaves:
+        count = {}
+        for leaf in leaves:
+            if leaf.value not in count:
+                count[leaf.value] = 1
+            else:
+                count[leaf.value] += 1
+        mostFrequent = max(count, key=count.get)
+
+        node.children = {}
+        node.value = mostFrequent
+
+
+
+    return node
+
+def dfs2 (node,examples,acc):
+  attributes = [] 
+  while node.children is not None:
+    attributes.append(node)
+  for x in attributes: 
+    set x.value = x.majority 
+    set x.children = {}
+    newacc = test (oldtree without the node,examples)
+    if newacc >= acc: 
+      acc=newacc
+      dfs (restoftree,examples,acc)
+
+
+'''
+
 
 
 def test(node, examples):
@@ -174,11 +233,8 @@ def test(node, examples):
 
   count = 0.0
   for example in examples:
-      print example 
       exclass = evaluate(node, example)
-      if exclass == example['Class']:
-          print Example
-          print Correct
+      if exclass == example['Class']:     
           count += 1
   acc = count / len(examples)
   return acc
@@ -199,23 +255,14 @@ def evaluate(node, example):
   return node.value
 
 
-# print getCountDict([{'Class': 1}, {'Class': 1}, {'Class': 1}], 'Class')
-
-def chooseBestAttribute(examples):
-
-    #takes in examples, returns the best attribute found (with highest information gain)
-    countDict = getCountDict(examples,'Class')
+def chooseBestAttribute(examples,countDict):
 
     entropy = 0.0
     gain = float("inf")
-    attributeCount = 0
-    valCount = 0
     best = ''
     newgain = 0.0
 
-    print gain
     for (attribute, value) in countDict.iteritems():
-        print attribute 
         newGain = 0.0
         attributeCount = 0.0
         valueResults = []
@@ -232,17 +279,13 @@ def chooseBestAttribute(examples):
                 valResult -= num / valTotal * math.log(num / valTotal,
                         2)
 
-            attributeCount += valCount
             valueResults.append(valResult)
             valueTotals.append(valTotal)
         
-        print ("valueResults",valueResults)
-        print ("valueTotals",valueTotals)
-        print ("Length",len(examples))
+
 
         for (counter, num) in enumerate(valueResults):
             newGain += valueTotals[counter] / len(examples) * num
-            print newGain
             
             if newGain<=gain:
                 gain = newGain 
