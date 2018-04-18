@@ -17,7 +17,6 @@ def ID3(examples, default):
   countDict = getCountDict(examples,'Class')
   t = Node()
 
-      
   lst = []
   for example in examples:
       lst.append(example['Class'])
@@ -27,14 +26,10 @@ def ID3(examples, default):
       return t
 
   elif lst[1:] == lst[:-1]:
-
-  # elif ALL EXAMPLES ARE THE SAME or CANNOT SPLIT EASILY:
-    # Node.Node(Mode(examples), examples.
-                            # include check for non trivial splits
       t.value = examples[0]['Class']
       return t
 
-    #chooseBestAttribute(examples) is '':
+  #chooseBestAttribute(examples) is '':
   elif not countDict:
       t.value = Mode(examples)
       return t
@@ -44,7 +39,6 @@ def ID3(examples, default):
   if len(countDict[best]) == 1: 
       t.value  = Mode(examples)
       return t 
-
 
   else:
 
@@ -64,11 +58,11 @@ def ID3(examples, default):
               subtree = ID3(removeAtt(examplesi,best), Mode(examples))
               t.children[val] = subtree
 
-      
       return t
 
 
 def Mode(examples):
+  #Takes in a set of examples and returns the most common Class 
   modeDic = {}
   for example in examples:
       if example['Class'] not in modeDic.keys():
@@ -82,6 +76,7 @@ def Mode(examples):
 
 
 def removeAtt(examples,attribute):
+  #removes attribute to prevent it occurring again in the sub tree
   newExamples = copy.deepcopy(examples)
 
   for example in newExamples:
@@ -90,11 +85,6 @@ def removeAtt(examples,attribute):
 
   return newExamples
     
-
-
-## For this next infogain function, we should use dictionaries to store attributes: values
-## one of their values should be a dict with number of democrats and number of republicans
-## I was stuck on how to a)Create this dict and b) how to access different values of it
 
 def getCountDict(examples, targetAtt):
   '''
@@ -167,37 +157,6 @@ def getCountDict(examples, targetAtt):
   #         {?: {'democrat': 0, 'republican': 1}}}}
 
 
-def chooseBestAttribute(examples):
-  countDict = getCountDict(examples,'Class') 
-  
-  entropy = 0.0
-  gain = 0.0
-  best=''
-  for (attribute, value) in countDict.iteritems():
-    valueResults = []
-    valueTotals = []
-    itemCounts = []
-    valTotal = 0.0
-    
- 
-    for (val, targetAtts) in value.iteritems():
-        for key,count in targetAtts.iteritems():
-            
-            itemCounts.append(count)
-            valTotal+=count
-    
-    
-    for count in itemCounts:
-        probability = count/valTotal
-        entropy -= probability * math.log(probability,2)
-        
-    ##times it by the probability in order to choose
-    if entropy>= gain:
-        gain = entropy 
-        best = attribute
-    
-    return best
-
 
 
 def prune(node, examples):
@@ -241,3 +200,52 @@ def evaluate(node, example):
 
 
 # print getCountDict([{'Class': 1}, {'Class': 1}, {'Class': 1}], 'Class')
+
+def chooseBestAttribute(examples):
+
+    #takes in examples, returns the best attribute found (with highest information gain)
+    countDict = getCountDict(examples,'Class')
+
+    entropy = 0.0
+    gain = float("inf")
+    attributeCount = 0
+    valCount = 0
+    best = ''
+    newgain = 0.0
+
+    print gain
+    for (attribute, value) in countDict.iteritems():
+        print attribute 
+        newGain = 0.0
+        attributeCount = 0.0
+        valueResults = []
+        valueTotals = []
+        for (val, targetAtts) in value.iteritems():
+            itemCounts = []
+            valTotal = 0.0
+            valResult = 0.0
+            for (item, count) in targetAtts.iteritems():
+                valTotal += count
+                itemCounts.append(count)
+
+            for num in itemCounts:
+                valResult -= num / valTotal * math.log(num / valTotal,
+                        2)
+
+            attributeCount += valCount
+            valueResults.append(valResult)
+            valueTotals.append(valTotal)
+        
+        print ("valueResults",valueResults)
+        print ("valueTotals",valueTotals)
+        print ("Length",len(examples))
+
+        for (counter, num) in enumerate(valueResults):
+            newGain += valueTotals[counter] / len(examples) * num
+            print newGain
+            
+            if newGain<=gain:
+                gain = newGain 
+                best = attribute
+
+    return best
