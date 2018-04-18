@@ -61,6 +61,15 @@ def ID3(examples, default):
           subtree=Node()
           subtree = ID3(examplesi, Mode(examples))
           t.children[val] = subtree
+      #Look through majoroity of all the children
+      count = {}
+      for child in t.children.values():
+          if child.majority not in count:
+              count[child.majority] = 1
+          else:
+              count[child.majority] += 1
+      #most frequent
+      t.majority = max(count, key=count.get)
 
       return t
 
@@ -208,6 +217,9 @@ def dfs(node, examples,acc):
 
     return node
 
+
+
+
 def dfs2 (node,examples,acc):
   attributes = [] 
   while node.children is not None:
@@ -220,10 +232,74 @@ def dfs2 (node,examples,acc):
       acc=newacc
       dfs (restoftree,examples,acc)
 
+def dfs(node, examples, acc, tree):
+  #update node
+
+  dfs(node, examples, acc, tree)
+
+  test(tree)
 
 '''
 
+#node is the entire tree and currNode is a node within it. currNode starts as node
+# currNode = copy.copy(node)
 
+# nodeQueue = []
+# nodeQueue.append(currNode)
+
+# while nodeQueue:
+#     currNode = nodeQueue.pop(0)
+#     #remove children of current node and test to see if acc ^
+#     if acc > test(node, examples):
+#       #if not, keep old tree
+#     else:
+#       #otherwise remove the children
+
+#     for child in currNode.children:
+#         nodeQueue.append(child)
+
+# currNode = copy.copy(node)
+
+# nodeStack = []
+# nodeStack.append(currNode)
+
+# while nodeStack:
+#       currNode = nodeStack.pop(-1)
+#       for value, child in currNode.children.iteritems():
+#           nodeStack.append(child)
+
+
+def prune(node, examples):
+    '''
+    Takes in a trained tree and a validation set of examples.  Prunes nodes in order
+    to improve accuracy on the validation data; the precise pruning strategy is up to you.
+    '''
+    print 'before'
+    printNode(node)
+    node = dfs(node, examples)
+    print 'after'
+    printNode(node)
+    return node
+
+
+def dfs(node, examples):
+
+    # for value, child in currNode.children.iteritems():
+    #     child = dfs(child, examples)
+
+    #Base case - compare acc for pruned node and not pruned
+    # return pruned node if it's better
+    copyNode = copy.copy(node)
+    copyNode.children = {}
+    if test(node, examples) <= test(copyNode, examples):
+        return copyNode
+
+    #Recursive Case
+    else:
+        for value, child in currNode.children.iteritems():
+            child = dfs(child, examples)
+
+    return node
 
 def test(node, examples):
   ''' 
@@ -292,3 +368,13 @@ def chooseBestAttribute(examples,countDict):
                 best = attribute
 
     return best
+
+
+def printNode(node):
+  print 'attribute', node.attribute
+  print 'majority', node.majority
+  print 'children', node.children
+  print 'value', node.value
+  for child in node.children.values():
+      printNode(child)
+
