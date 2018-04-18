@@ -48,6 +48,11 @@ def ID3(examples, default):
 
       values = []
       t.attribute = best 
+      t.majority = Mode(examples)
+
+      print 'attribute: ', t.attribute
+      print 'examples: ', examples
+      print 'majority: ', t.majority
 
       for item in examples:
           if item[best] not in values:
@@ -61,15 +66,20 @@ def ID3(examples, default):
           subtree=Node()
           subtree = ID3(examplesi, Mode(examples))
           t.children[val] = subtree
-      #Look through majoroity of all the children
-      count = {}
-      for child in t.children.values():
-          if child.majority not in count:
-              count[child.majority] = 1
-          else:
-              count[child.majority] += 1
-      #most frequent
-      t.majority = max(count, key=count.get)
+      #Look through majority of all the children
+      # t.majority = Mode(examples)
+      # count = {}
+      # for child in t.children.values():
+        
+
+      #     if child.majority not in count:
+      #         count[child.majority] = 1
+      #     else:
+      #         count[child.majority] += 1
+      # print count
+      # #most frequent
+      # # t.majority = majority that corresponds to max(array of children.numexamples)
+      # t.majority = max(count, key=count.get)
 
       return t
 
@@ -170,128 +180,21 @@ def getCountDict(examples, targetAtt):
   #         {?: {'democrat': 0, 'republican': 1}}}}
 
 
-
-'''
-def prune(node, examples):
-    
-    Takes in a trained tree and a validation set of examples.  Prunes nodes in order
-    to improve accuracy on the validation data; the precise pruning strategy is up to you.
-    
-    acc = test(node,examples)
-    newTree = dfs(node,examples)
-
-
-    return newTree
-
-def dfs(node, examples,acc):
-    leaves = []
-    numLeaves = len(node.children)
-    for value, child in node.children.iteritems():
-        if child.value is None:
-            newNode = dfs(child, examples)
-            if test(node,examples) > acc:
-               child = newNode
-
-            child = newNode
-
-
-            if newNode.value is not None:
-                leaves.append(child)
-        else:
-            leaves.append(child)
-
-    #if all children were added to leaves then check to see if you should prune
-    if len(leaves) == numLeaves:
-        count = {}
-        for leaf in leaves:
-            if leaf.value not in count:
-                count[leaf.value] = 1
-            else:
-                count[leaf.value] += 1
-        mostFrequent = max(count, key=count.get)
-
-        node.children = {}
-        node.value = mostFrequent
-
-
-
-    return node
-
-
-
-
-def dfs2 (node,examples,acc):
-  attributes = [] 
-  while node.children is not None:
-    attributes.append(node)
-  for x in attributes: 
-    set x.value = x.majority 
-    set x.children = {}
-    newacc = test (oldtree without the node,examples)
-    if newacc >= acc: 
-      acc=newacc
-      dfs (restoftree,examples,acc)
-
-def dfs(node, examples, acc, tree):
-  #update node
-
-  dfs(node, examples, acc, tree)
-
-  test(tree)
-
-'''
-
-#node is the entire tree and currNode is a node within it. currNode starts as node
-# currNode = copy.copy(node)
-
-# nodeQueue = []
-# nodeQueue.append(currNode)
-
-# while nodeQueue:
-#     currNode = nodeQueue.pop(0)
-#     #remove children of current node and test to see if acc ^
-#     if acc > test(node, examples):
-#       #if not, keep old tree
-#     else:
-#       #otherwise remove the children
-
-#     for child in currNode.children:
-#         nodeQueue.append(child)
-
-# currNode = copy.copy(node)
-
-# nodeStack = []
-# nodeStack.append(currNode)
-
-# while nodeStack:
-#       currNode = nodeStack.pop(-1)
-#       for value, child in currNode.children.iteritems():
-#           nodeStack.append(child)
-
-
 def prune(node, examples):
     '''
     Takes in a trained tree and a validation set of examples.  Prunes nodes in order
     to improve accuracy on the validation data; the precise pruning strategy is up to you.
     '''
-    print 'BEFORE'
-    printNode(node)
-    print '---------------------------'
 
     node = dfs(node, examples)
-
-    print '---------------------------'
-    print 'AFTER'
-    printNode(node)
-    print '---------------------------'
 
     return node
 
 
 def dfs(node, examples):
 
-    print 'children', node.children
-    print 'examples', examples
+    # print 'children', node.children
+    # print 'examples', examples
 
     att = node.attribute
     examplesi = []
@@ -300,7 +203,7 @@ def dfs(node, examples):
         for example in examples:
             if value == example[att]:
                 examplesi.append(example)
-        child = dfs(child, examplesi)
+        node.children[value] = dfs(child, examplesi)
         examplesi = []
 
     #Base case - compare acc for pruned node and not pruned
@@ -309,12 +212,8 @@ def dfs(node, examples):
     copyNode.children = {}
 
     if len(examples) is not 0 and test(node, examples) <= test(copyNode, examples):
+        # print 'before prune: ', test(node, examples), 'after prune: ', test(copyNode, examples)
         return copyNode
-
-    #Recursive Case
-    # else:
-    #     for value, child in node.children.iteritems():
-    #         child = dfs(child, examples)
 
     return node
 
@@ -376,12 +275,10 @@ def chooseBestAttribute(examples,countDict):
             valueResults.append(valResult)
             valueTotals.append(valTotal)
         
-
-
         for (counter, num) in enumerate(valueResults):
             newGain += valueTotals[counter] / len(examples) * num
             
-            if newGain<=gain:
+            if newGain<gain:
                 gain = newGain 
                 best = attribute
 
@@ -389,10 +286,15 @@ def chooseBestAttribute(examples,countDict):
 
 
 def printNode(node):
-  print 'attribute', node.attribute
-  print 'majority', node.majority
-  print 'children', node.children
-  print 'value', node.value
-  for child in node.children.values():
+  print 'attribute: ', node.attribute
+  print 'majority: ', node.majority
+  print 'children: ', printChildren(node)
+  print 'value: ', node.value
+  for key, child in node.children.iteritems():
+      print 'key', key
       printNode(child)
+
+def printChildren(node):
+  for value, child in node.children.iteritems():
+    print ' key:',value, ' child att:',child.attribute, ' child majority:',child.majority, ' child value:',child.value, ' num children:', len(child.children)
 

@@ -95,7 +95,6 @@ def testPruningOnHouseData(inFile):
     testID3AndTest()
    # testPruningOnHouseData(inFile)
 
-print testPruning()
 
-# testPruningOnHouseData('house_votes_84.data')
+print testPruning()
   
