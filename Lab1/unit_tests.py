@@ -97,4 +97,5 @@ def testPruningOnHouseData(inFile):
 
 
 print testPruning()
+print testPruningOnHouseData('house_votes_84.data')
   

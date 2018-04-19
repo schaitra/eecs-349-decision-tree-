@@ -50,9 +50,6 @@ def ID3(examples, default):
       t.attribute = best 
       t.majority = Mode(examples)
 
-      print 'attribute: ', t.attribute
-      print 'examples: ', examples
-      print 'majority: ', t.majority
 
       for item in examples:
           if item[best] not in values:
@@ -284,17 +281,4 @@ def chooseBestAttribute(examples,countDict):
 
     return best
 
-
-def printNode(node):
-  print 'attribute: ', node.attribute
-  print 'majority: ', node.majority
-  print 'children: ', printChildren(node)
-  print 'value: ', node.value
-  for key, child in node.children.iteritems():
-      print 'key', key
-      printNode(child)
-
-def printChildren(node):
-  for value, child in node.children.iteritems():
-    print ' key:',value, ' child att:',child.attribute, ' child majority:',child.majority, ' child value:',child.value, ' num children:', len(child.children)
 
